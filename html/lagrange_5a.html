@@ -1,0 +1,230 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>lagrange_5a</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-08-08"><meta name="DC.source" content="lagrange_5a.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">5a lagrange test script developed in class w/</a></li><li><a href="#2">lagrange test script developed in class w/</a></li></ul></div><h2>5a lagrange test script developed in class w/<a name="1"></a></h2><p>slight changes</p><pre class="codeinput">clear
+
+i=1;
+<span class="keyword">for</span> n = [4,8,16,32];
+    nout(i)=n;
+    <span class="comment">% interpolate a more interesting function</span>
+    f = @(x) log(sin(x).^2+0.1);
+    x = linspace(-1,1,n/2+1); <span class="comment">% interpolation points</span>
+    y = f(x);
+
+    <span class="comment">% evaluation points</span>
+    z = linspace(-1,1,1001);
+
+    <span class="comment">% construct Lagrange weights</span>
+    w = lagrange_weights(x);
+
+    <span class="comment">% evaluate interpolant</span>
+    tic
+    Pn = Lagrange_eval_barycentric(z,x,y,w);
+    eltime(i)=toc;
+
+    <span class="comment">% check the error</span>
+    error(i)=max(abs(Pn-f(z)));
+
+    figure(1)
+    subplot(4,2,i*2-1)
+    plot(z,Pn,z,f(z),x,y,<span class="string">'*'</span>);
+    title([<span class="string">'5a Equal Grid n='</span> num2str(n) <span class="string">' Error='</span> num2str(error(i))],<span class="keyword">...</span>
+        <span class="string">'FontSize'</span>,6)
+    <span class="comment">%xlabel('x');</span>
+    <span class="comment">%ylabel('y');</span>
+    axis([-1 1 -2.5 .5])
+    <span class="comment">%legend('interpolant','exact','interpolation points')</span>
+    <span class="comment">% pause</span>
+    i=i+1;
+<span class="keyword">end</span>
+<span class="comment">%nRuntimeError=[nout' eltime' error']</span>
+</pre><img vspace="5" hspace="5" src="lagrange_5a_01.png" alt=""> <h2>lagrange test script developed in class w/<a name="2"></a></h2><p>slight changes for problem 5b</p><pre class="codeinput">clear
+
+j=1;
+<span class="keyword">for</span> n = [4,8,16,32];
+    nout(j)=n;
+    <span class="comment">% interpolate a more interesting function</span>
+    f = @(x) log(sin(x).^2+0.1);
+    <span class="keyword">for</span> i=1:n ; <span class="comment">% build interpolation points</span>
+        x(i)=cos((2*i+1)*pi/(2*(n+1)));
+    <span class="keyword">end</span>
+    y = f(x);
+
+    <span class="comment">% evaluation points</span>
+    z = linspace(-1,1,1001);
+
+    <span class="comment">% construct Lagrange weights</span>
+    w = lagrange_weights(x);
+
+    <span class="comment">% evaluate interpolant</span>
+    tic
+    Pn = Lagrange_eval_barycentric(z,x,y,w);
+    eltime(j)=toc;
+
+    <span class="comment">% check the error</span>
+    error(j)=max(abs(Pn-f(z)));
+
+    figure(1)
+    subplot(4,2,j*2)
+    plot(z,Pn,z,f(z),x,y,<span class="string">'*'</span>);
+    title([<span class="string">'5b Chebyshev n='</span> num2str(n) <span class="string">' Error='</span> num2str(error(j))],<span class="keyword">...</span>
+        <span class="string">'FontSize'</span>,6)
+    <span class="comment">%xlabel('x');</span>
+    <span class="comment">%ylabel('y');</span>
+    axis([-1 1 -2.5 .5])
+    <span class="comment">%legend('interpolant','exact','interpolation points')</span>
+    <span class="comment">% pause</span>
+    j=j+1;
+<span class="keyword">end</span>
+<span class="comment">%nRuntimeError=[nout' eltime' error']</span>
+</pre><img vspace="5" hspace="5" src="lagrange_5a_02.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% 5a lagrange test script developed in class w/ 
+% slight changes
+clear
+
+i=1;
+for n = [4,8,16,32];
+    nout(i)=n;
+    % interpolate a more interesting function
+    f = @(x) log(sin(x).^2+0.1);
+    x = linspace(-1,1,n/2+1); % interpolation points
+    y = f(x);
+    
+    % evaluation points
+    z = linspace(-1,1,1001);
+    
+    % construct Lagrange weights
+    w = lagrange_weights(x);
+    
+    % evaluate interpolant
+    tic
+    Pn = Lagrange_eval_barycentric(z,x,y,w);
+    eltime(i)=toc;
+    
+    % check the error
+    error(i)=max(abs(Pn-f(z)));  
+    
+    figure(1)
+    subplot(4,2,i*2-1)
+    plot(z,Pn,z,f(z),x,y,'*');
+    title(['5a Equal Grid n=' num2str(n) ' Error=' num2str(error(i))],...
+        'FontSize',6)
+    %xlabel('x');
+    %ylabel('y');
+    axis([-1 1 -2.5 .5])
+    %legend('interpolant','exact','interpolation points')
+    % pause
+    i=i+1;
+end
+%nRuntimeError=[nout' eltime' error']
+
+%% lagrange test script developed in class w/ 
+% slight changes for problem 5b
+clear
+
+j=1;
+for n = [4,8,16,32];
+    nout(j)=n;
+    % interpolate a more interesting function
+    f = @(x) log(sin(x).^2+0.1);
+    for i=1:n ; % build interpolation points
+        x(i)=cos((2*i+1)*pi/(2*(n+1)));
+    end
+    y = f(x);
+    
+    % evaluation points
+    z = linspace(-1,1,1001);
+    
+    % construct Lagrange weights
+    w = lagrange_weights(x);
+    
+    % evaluate interpolant
+    tic
+    Pn = Lagrange_eval_barycentric(z,x,y,w);
+    eltime(j)=toc;
+    
+    % check the error
+    error(j)=max(abs(Pn-f(z)));  
+    
+    figure(1)
+    subplot(4,2,j*2)
+    plot(z,Pn,z,f(z),x,y,'*');
+    title(['5b Chebyshev n=' num2str(n) ' Error=' num2str(error(j))],...
+        'FontSize',6)
+    %xlabel('x');
+    %ylabel('y');
+    axis([-1 1 -2.5 .5])
+    %legend('interpolant','exact','interpolation points')
+    % pause
+    j=j+1;
+end
+%nRuntimeError=[nout' eltime' error']
+
+##### SOURCE END #####
+--></body></html>
